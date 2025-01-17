@@ -15,4 +15,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EcommerceBookApp.DataAccess\EcommerceBookApp.DataAccess.csproj" />
+    <ProjectReference Include="..\EcommerceBookApp.Models\EcommerceBookApp.Models.csproj" />
+    <ProjectReference Include="..\EcommerceBookApp.Utility\EcommerceBookApp.Utility.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceBookApp", "EcommerceBookApp\EcommerceBookApp.csproj", "{D246629A-05B9-455D-ABF4-1A8D62D79FB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceBookApp", "EcommerceBookApp\EcommerceBookApp.csproj", "{D246629A-05B9-455D-ABF4-1A8D62D79FB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceBookApp_Razor", "EcommerceBookApp_Razor\EcommerceBookApp_Razor.csproj", "{48F4D830-69D3-478C-8F23-6344552A5521}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceBookApp.DataAccess", "EcommerceBookApp.DataAccess\EcommerceBookApp.DataAccess.csproj", "{F1119D5E-10DC-460C-910D-06EACDB01E72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceBookApp.Models", "EcommerceBookApp.Models\EcommerceBookApp.Models.csproj", "{042E06E8-A6EC-4E0F-BE81-AB794B3CC5AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceBookApp.Utility", "EcommerceBookApp.Utility\EcommerceBookApp.Utility.csproj", "{FD7E8DCE-7575-4F47-A2A9-A10A6FA4F35E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{D246629A-05B9-455D-ABF4-1A8D62D79FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D246629A-05B9-455D-ABF4-1A8D62D79FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D246629A-05B9-455D-ABF4-1A8D62D79FB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48F4D830-69D3-478C-8F23-6344552A5521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48F4D830-69D3-478C-8F23-6344552A5521}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48F4D830-69D3-478C-8F23-6344552A5521}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48F4D830-69D3-478C-8F23-6344552A5521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1119D5E-10DC-460C-910D-06EACDB01E72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1119D5E-10DC-460C-910D-06EACDB01E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1119D5E-10DC-460C-910D-06EACDB01E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1119D5E-10DC-460C-910D-06EACDB01E72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042E06E8-A6EC-4E0F-BE81-AB794B3CC5AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042E06E8-A6EC-4E0F-BE81-AB794B3CC5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042E06E8-A6EC-4E0F-BE81-AB794B3CC5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042E06E8-A6EC-4E0F-BE81-AB794B3CC5AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD7E8DCE-7575-4F47-A2A9-A10A6FA4F35E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD7E8DCE-7575-4F47-A2A9-A10A6FA4F35E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD7E8DCE-7575-4F47-A2A9-A10A6FA4F35E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD7E8DCE-7575-4F47-A2A9-A10A6FA4F35E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
