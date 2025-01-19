@@ -13,12 +13,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EcommerceBookApp.DataAccess\EcommerceBookApp.DataAccess.csproj" />
     <ProjectReference Include="..\EcommerceBookApp.Models\EcommerceBookApp.Models.csproj" />
     <ProjectReference Include="..\EcommerceBookApp.Utility\EcommerceBookApp.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>
