@@ -11,11 +11,13 @@ namespace EcommerceBookApp.DataAccess.Repository
     public class UnitOfWork : IUnitOfWork
     {
         public ICategoryRepository CategoryRepository { get; private set; }
+        public IProductRepository ProductRepository { get; private set; }
         private readonly ApplicationDbContext _applicationDbContext;
         public UnitOfWork(ApplicationDbContext applicationDbContext) 
         {
             _applicationDbContext = applicationDbContext;
             CategoryRepository = new CategoryRepository(_applicationDbContext);
+            ProductRepository = new ProductRepository(_applicationDbContext);
         }
 
         public void Save()
