@@ -3,6 +3,7 @@ using EcommerceBookApp.Models;
 using EcommerceBookApp.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using NuGet.Packaging.Signing;
 
 namespace EcommerceBookApp.Areas.Admin.Controllers
 {
@@ -10,19 +11,21 @@ namespace EcommerceBookApp.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
         {
-            List<Product> dbProductList = _unitOfWork.ProductRepository.GetAll().ToList();
+            List<Product> dbProductList = _unitOfWork.ProductRepository.GetAll(includeProperties: "Category").ToList();
 			return View(dbProductList);
         }
 
-		public IActionResult Create()
+		public IActionResult Upsert(int? id)
 		{
 			//Using EF Core Projections to convert form IEnumerable<Category> to IEnumerable<SelectListItem>
 			IEnumerable<SelectListItem> categoryList = _unitOfWork.CategoryRepository.GetAll().
@@ -38,15 +41,55 @@ namespace EcommerceBookApp.Areas.Admin.Controllers
 				CategoryList = categoryList,
 				Product = new Product()
 			};
-			return View(productVM);
+			if(id==null || id==0)
+			{
+				//For create
+				return View(productVM);
+			}
+			else
+			{
+				productVM.Product = _unitOfWork.ProductRepository.GetFirstOrDefault(u => u.Id == id);
+				return View(productVM);
+			}	
+			
 		}
 
 		[HttpPost]
-		public IActionResult Create(ProductVM productVM)
+		public IActionResult Upsert(ProductVM productVM,IFormFile? file)
 		{
 			if (ModelState.IsValid)
 			{
-				_unitOfWork.ProductRepository.Add(productVM.Product); //Used to persist the Category dataobject in to the table
+				string wwwRootPath = _webHostEnvironment.WebRootPath;
+				if(file !=null)
+				{
+					string fileName= Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+					string productPath = Path.Combine(wwwRootPath,@"images\product");
+					if(!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+					{
+						//Delete the old image
+						var oldImagePath= Path.Combine(wwwRootPath,productVM.Product.ImageUrl.TrimStart('\\'));
+						if(System.IO.File.Exists(oldImagePath))
+						{
+							System.IO.File.Delete(oldImagePath);
+						}
+					}
+					
+					using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+					{
+						file.CopyTo(fileStream); //Copies the file to the desired location
+					}
+					productVM.Product.ImageUrl = @"\images\product\" + fileName;
+
+                }
+				if(productVM.Product.Id ==0)
+				{
+					_unitOfWork.ProductRepository.Add(productVM.Product); //Used to persist the Category dataobject in to the table
+				}
+				else
+				{
+					_unitOfWork.ProductRepository.Update(productVM.Product);
+				}
+
 				_unitOfWork.Save();
 				TempData["success"] = "Product created Sucessfully!!";
 				return RedirectToAction("Index", "Product"); // Redirects to the Index in Category
@@ -63,35 +106,6 @@ namespace EcommerceBookApp.Areas.Admin.Controllers
 			}
 			
 		}
-
-		public IActionResult Edit(int? id)
-		{
-			if (id == null || id == 0)
-			{
-				return NotFound();
-			}
-			Product? productFromDb = _unitOfWork.ProductRepository.GetFirstOrDefault(u => u.Id == id); //Find only works on the primary key 
-																										  
-			if (productFromDb == null)
-			{
-				return NotFound();
-			}
-			return View(productFromDb);
-		}
-
-		[HttpPost]
-		public IActionResult Edit(Product product)
-		{
-			if (ModelState.IsValid)
-			{
-				_unitOfWork.ProductRepository.Update(product); //Used to update an existing record
-				_unitOfWork.Save();
-				TempData["success"] = "Product updated Sucessfully!!";
-				return RedirectToAction("Index", "Product"); // Redirects to the Index in Product
-			}
-			return View();
-		}
-
 		public IActionResult Delete(int? id)
 		{
 			if (id == null || id == 0)
@@ -121,5 +135,13 @@ namespace EcommerceBookApp.Areas.Admin.Controllers
 			return RedirectToAction("Index", "Product");
 		}
 
-	}
+		#region API CALLS
+		[HttpGet]
+		public IActionResult GetaLL()
+		{
+            List<Product> dbProductList = _unitOfWork.ProductRepository.GetAll(includeProperties: "Category").ToList();
+            return Json(new {data=dbProductList});
+        }
+        #endregion
+    }
 }
