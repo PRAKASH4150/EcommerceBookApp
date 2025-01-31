@@ -8,5 +8,9 @@ namespace EcommerceBookApp.Utility
 {
     public static class SD
     {
-    }
+        public const string ROLE_CUST = "Customer";
+		public const string ROLE_COMP = "Company";
+		public const string ROLE_ADMIN = "Admin";
+		public const string ROLE_EMPLOYEE = "Employee";
+	}
 }

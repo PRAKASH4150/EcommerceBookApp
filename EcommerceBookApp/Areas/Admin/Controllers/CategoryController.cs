@@ -1,11 +1,14 @@
 ﻿using EcommerceBookApp.DataAccess.Repository;
 using EcommerceBookApp.DataAccess.Repository.IRepository;
 using EcommerceBookApp.Models;
+using EcommerceBookApp.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceBookApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles =SD.ROLE_ADMIN)] //Only allows Admin users to access it.
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -1,9 +1,11 @@
 ﻿using EcommerceBookApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceBookApp.DataAccess.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) //Options will be passed to the base class DbContext
         {
@@ -12,10 +14,13 @@ namespace EcommerceBookApp.DataAccess.Data
 
         public DbSet<Category> Categories{ get; set; } //Categories will be the table name'
         public DbSet<Product> Products { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         //We are overriding the below method from DbContext to seed the data in to the table Category.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Need to add the below line if using Identity Db context
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 }, //Object Initializer syntax
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },

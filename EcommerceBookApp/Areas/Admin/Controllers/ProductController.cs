@@ -1,6 +1,8 @@
 ﻿using EcommerceBookApp.DataAccess.Repository.IRepository;
 using EcommerceBookApp.Models;
 using EcommerceBookApp.Models.ViewModels;
+using EcommerceBookApp.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Packaging.Signing;
@@ -8,6 +10,7 @@ using NuGet.Packaging.Signing;
 namespace EcommerceBookApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.ROLE_ADMIN)] //Only allows Admin users to access it.
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
