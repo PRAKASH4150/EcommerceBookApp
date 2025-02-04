@@ -15,12 +15,24 @@ namespace EcommerceBookApp.DataAccess.Data
         public DbSet<Category> Categories{ get; set; } //Categories will be the table name'
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         //We are overriding the below method from DbContext to seed the data in to the table Category.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Need to add the below line if using Identity Db context
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Company>().HasData(
+                new Company { 
+                    Id=1,
+                    Name="Ivy Biomedical Systems .Inc",
+                    StreetAddress="11 Business Park Dr",
+                    City="Branford",
+                    State="Connecticut",
+                    PostalCode="06530",
+                    PhoneNumber="1234567890"
+                }
+                );
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Action", DisplayOrder = 1 }, //Object Initializer syntax
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },
