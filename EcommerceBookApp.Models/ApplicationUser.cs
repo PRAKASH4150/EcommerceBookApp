@@ -20,7 +20,7 @@ namespace EcommerceBookApp.Models
 		public string? PostalCode { get; set;}
         public int? CompanyId { get; set; }
 
-		[ForeignKey("ComapanyId")]
+		[ForeignKey("CompanyId")]
 		[ValidateNever]
 		public Company Company { get; set; }
     }

@@ -16,6 +16,7 @@ namespace EcommerceBookApp.DataAccess.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
         //We are overriding the below method from DbContext to seed the data in to the table Category.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
