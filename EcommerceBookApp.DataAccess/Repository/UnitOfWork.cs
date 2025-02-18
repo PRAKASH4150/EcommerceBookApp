@@ -15,6 +15,8 @@ namespace EcommerceBookApp.DataAccess.Repository
         public ICompanyRepository CompanyRepository { get; private set; }
         public IShoppingCartRepository ShoppingCartRepository { get; private set; }
         public IApplicationUserRepository ApplicationUserRepository { get; private set; }
+        public IOrderHeaderRepository OrderHeaderRepository { get; private set; }
+        public IOrderDetailRepository OrderDetailRepository { get; private set; }
 
         private readonly ApplicationDbContext _applicationDbContext;
         public UnitOfWork(ApplicationDbContext applicationDbContext) 
@@ -25,6 +27,8 @@ namespace EcommerceBookApp.DataAccess.Repository
             CompanyRepository = new CompanyRepository(_applicationDbContext);
             ShoppingCartRepository = new ShoppingCartRepository(_applicationDbContext);
             ApplicationUserRepository = new ApplicationUserRepository(_applicationDbContext);
+            OrderDetailRepository = new OrderDetailRepository(_applicationDbContext);
+            OrderHeaderRepository = new OrderHeaderRepository(_applicationDbContext);
         }
 
         public void Save()
