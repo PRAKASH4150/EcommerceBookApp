@@ -4,6 +4,7 @@ using EcommerceBookApp.Models.ViewModels;
 using EcommerceBookApp.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace EcommerceBookApp.Areas.Customer.Controllers
@@ -86,7 +87,7 @@ namespace EcommerceBookApp.Areas.Customer.Controllers
             ShoppinCartVM.OrderHeader.PhoneNumber = ShoppinCartVM.OrderHeader.ApplicationUser.PhoneNumber;
             ShoppinCartVM.OrderHeader.StreetAddress = ShoppinCartVM.OrderHeader.ApplicationUser.StreetAddress;
             ShoppinCartVM.OrderHeader.City = ShoppinCartVM.OrderHeader.ApplicationUser.City;
-            ShoppinCartVM.OrderHeader.State = ShoppinCartVM.OrderHeader.ApplicationUser.state;
+            ShoppinCartVM.OrderHeader.State = ShoppinCartVM.OrderHeader.ApplicationUser.State;
             ShoppinCartVM.OrderHeader.PostalCode = ShoppinCartVM.OrderHeader.ApplicationUser.PostalCode;
             foreach (var cart in ShoppinCartVM.ShoppingCartList)
             {
@@ -107,13 +108,13 @@ namespace EcommerceBookApp.Areas.Customer.Controllers
                 includeProperties: "Product");
             ShoppinCartVM.OrderHeader.OrderDate = System.DateTime.Now;
             ShoppinCartVM.OrderHeader.ApplicationUserId = userId;
-			ShoppinCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUserRepository.GetFirstOrDefault(u => u.Id == userId);
+			ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepository.GetFirstOrDefault(u => u.Id == userId);
             foreach (var cart in ShoppinCartVM.ShoppingCartList)
 			{
 				cart.Price = GetPriceBasedOnQuantity(cart);
 				ShoppinCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
 			}
-			if (ShoppinCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+			if (applicationUser.CompanyId.GetValueOrDefault() == 0)
 			{
                 //It is a regular customer account we need to capture the payment
                 ShoppinCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
@@ -139,9 +140,64 @@ namespace EcommerceBookApp.Areas.Customer.Controllers
                 _unitOfWork.OrderDetailRepository.Add(OrderDetail);
                 _unitOfWork.Save();
             }
-			return View(ShoppinCartVM);
+            if(applicationUser.CompanyId.GetValueOrDefault() ==0)
+            {
+				//It is a regular customer account and handle the stripe payment
+				var domain = "https://localhost:7177/";
+				var options = new Stripe.Checkout.SessionCreateOptions
+				{
+					SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppinCartVM.OrderHeader.Id}",
+					CancelUrl = domain + "customer/cart/index",
+					LineItems = new List<SessionLineItemOptions>(),
+					Mode = "payment",
+				};
+				foreach (var item in ShoppinCartVM.ShoppingCartList)
+				{
+					var sessionLineItem = new SessionLineItemOptions
+					{
+						PriceData = new SessionLineItemPriceDataOptions
+						{
+							UnitAmount = (long)(item.Price * 100),//20.50 =? 2050
+							Currency = "usd",
+							ProductData = new SessionLineItemPriceDataProductDataOptions
+							{
+								Name = item.Product.Title
+							}
+						},
+						Quantity = item.Count
+					};
+					options.LineItems.Add(sessionLineItem);
+				}
+				var service = new SessionService();
+				Session session = service.Create(options);
+				_unitOfWork.OrderHeaderRepository.UpdateStripePaymentID(ShoppinCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+				_unitOfWork.Save();
+				Response.Headers.Add("Location", session.Url);
+				return new StatusCodeResult(303);
+			}
+            return RedirectToAction(nameof(OrderConfirmation), new {id=ShoppinCartVM.OrderHeader.Id});
 		}
 
+        public IActionResult OrderConfirmation(int id)
+        {
+            OrderHeader orderHeader=_unitOfWork.OrderHeaderRepository.GetFirstOrDefault(U => U.Id == id,includeProperties:"ApplicationUser");
+            if(orderHeader.PaymentStatus !=SD.PaymentStatusDelayedPayment)
+            {
+                //This is an order by customer
+                var service=new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+                if(session.PaymentStatus.ToLower() == "paid")
+                {
+					_unitOfWork.OrderHeaderRepository.UpdateStripePaymentID(id, session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeaderRepository.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
+                    _unitOfWork.Save();
+				}
+                List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCartRepository.GetAll(u => u.ApplicationUserId== orderHeader.ApplicationUserId).ToList();
+                _unitOfWork.ShoppingCartRepository.RemoveRange(shoppingCarts);
+                _unitOfWork.Save();
+            }
+            return View(id);
+        }
 		private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
         {
             if (shoppingCart.Count <= 50)

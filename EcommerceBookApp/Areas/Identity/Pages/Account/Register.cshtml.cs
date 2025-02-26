@@ -161,6 +161,7 @@ namespace EcommerceBookApp.Areas.Identity.Pages.Account
                 user.City = Input.City;
                 user.PostalCode = Input.PostalCode;
                 user.PhoneNumber = Input.PhoneNumber;
+                user.State = Input.State;
                 if(Input.Role == SD.ROLE_COMP)
                 {
                     user.CompanyId=Input.CompanyId;
