@@ -1,5 +1,6 @@
 using EcommerceBookApp.DataAccess.Repository.IRepository;
 using EcommerceBookApp.Models;
+using EcommerceBookApp.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -50,14 +51,17 @@ namespace EcommerceBookApp.Areas.Customer.Controllers
                 //Shop cart exists
                 cartFromDb.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCartRepository.Update(cartFromDb);
+                _unitOfWork.Save();
             }
             else
             {
                 //add cart record
                 _unitOfWork.ShoppingCartRepository.Add(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCartRepository.GetAll(u => u.ApplicationUserId == userId).Count());
             }
             TempData["success"] = "Cart updated successfully";
-            _unitOfWork.Save();
+            
             return RedirectToAction(nameof(Index));
         }
 
